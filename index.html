@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+    <meta property="og:title" content="Jessie Math - 比與比值">
+    <meta property="og:description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+    <meta property="og:type" content="website">
+    
+    <meta property="og:image" content="g6-u4.png">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1536">
+    <meta property="og:image:alt" content="Jessie Math 遊戲封面">
+    
+    <link rel="image_src" href="g6-u4.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Jessie Math - 比與比值">
+    <meta name="twitter:description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+    <meta name="twitter:image" content="g6-u4.png">
+
+    <title>Jessie Math - 比與比值</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #F5A623;
+            --bg-color: #F8F9FA;
+            --text-color: #333333;
+            --card-bg: #FFFFFF;
+            --correct-color: #2ECC71;
+            --wrong-color: #E74C3C;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 手機強制橫向提示 (RWD) */
+        #rotate-prompt { display: none; }
+        @media screen and (max-width: 767px) and (orientation: portrait) {
+            #rotate-prompt {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background-color: var(--primary-color);
+                color: white;
+                z-index: 9999;
+                text-align: center;
+                padding: 20px;
+                box-sizing: border-box;
+                font-size: 22px;
+                font-weight: bold;
+            }
+            #main-content, header, footer { display: none !important; }
+        }
+
+        /* Header 導覽列 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary-color);
+            background-color: transparent;
+            object-fit: contain;
+        }
+
+        .brand h1 {
+            font-size: 24px;
+            color: #2C3E50;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: white;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 主要內容區 */
+        #main-content {
+            flex: 1;
+        }
+
+        /* 頁面容器 */
+        .page {
+            display: none;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .active-page {
+            display: block;
+        }
+
+        /* 按鈕與表單 */
+        button, input, select {
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .action-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #E67E22;
+            transform: translateY(-2px);
+        }
+
+        /* Page 1: 登入與規則 */
+        .rules-box {
+            background: #FFF3E0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        /* Page 2: 主選單與排行榜 */
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .level-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .level-btn:hover { background-color: #3498DB; }
+
+        .difficulty-select {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .diff-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            background: #eee;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .leaderboard {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .leaderboard th, .leaderboard td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .leaderboard th { background-color: var(--primary-color); color: white; }
+
+        /* Page 3: 遊戲畫面 */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .combo-text { color: var(--secondary-color); font-size: 24px; animation: pulse 0.5s; }
+        
+        .question-box {
+            font-size: 24px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            font-weight: bold;
+            color: #2C3E50;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* 數學分數樣式：分子在上，分母在下 */
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 4px;
+            line-height: 1.2;
+            font-size: 0.9em;
+        }
+        .fraction .fup {
+            padding: 0 4px;
+        }
+        .fraction .fdn {
+            border-top: 2px solid currentColor;
+            padding: 0 4px;
+        }
+
+        /* 專屬計算白板區 */
+        #dedicated-whiteboard {
+            display: none;
+            width: 100%;
+            height: 300px;
+            background-image: radial-gradient(#ddd 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-color: #ffffff;
+            border: 3px dashed var(--primary-color);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            display: block;
+            touch-action: none;
+        }
+        
+        .clear-wb-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--wrong-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 20px;
+            transition: 0.2s;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-btn:hover:not(:disabled) { background-color: #EBF5FB; }
+        .option-btn.correct { background-color: var(--correct-color) !important; color: white !important; border-color: var(--correct-color) !important; }
+        .option-btn.wrong { background-color: var(--wrong-color) !important; color: white !important; border-color: var(--wrong-color) !important; }
+
+        .game-controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Page 4: 復盤機制 */
+        .review-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .review-item.correct-bg { background-color: #E8F8F5; border-color: #A3E4D7; }
+        .review-item.wrong-bg { background-color: #FDEDEC; border-color: #F5B7B1; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Footer 樣式 */
+        footer {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin-top: auto;
+            background-color: transparent;
+        }
+        .footer-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #2C3E50;
+            color: white;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .footer-left, .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+        }
+        .footer-tagline {
+            font-weight: bold;
+            color: #EBF5FB;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .nav-btn { font-size: 14px; padding: 6px 12px; }
+            #dedicated-whiteboard { height: 250px; }
+            .footer-pill { flex-direction: column; text-align: center; border-radius: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rotate-prompt">
+        <i class="fas fa-mobile-alt" style="font-size: 60px; margin-bottom: 20px; transform: rotate(90deg);"></i>
+        <p>請將裝置轉為橫向，<br>以獲得最佳的計算與遊戲體驗！</p>
+    </div>
+
+    <header>
+        <div class="brand">
+            <img src="JESSIEMATH-Q.png" alt="Jessie Math" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\'><circle cx=\'25\' cy=\'25\' r=\'25\' fill=\'#ccc\'/></svg>'">
+            <h1>Jessie Math</h1>
+        </div>
+        <div class="nav-links">
+            <a href="https://jessiemath0703-chu.github.io/website2/" class="nav-btn">🏠 首頁</a>
+            <a href="https://jessiemath0703-chu.github.io/Game-Lobby/" class="nav-btn">🎮 遊戲大廳</a>
+            <a href="https://jessiemath0703-chu.github.io/Game-Lobby/#g6-u4" class="nav-btn">🔙 六年級比與比值</a>
+        </div>
+    </header>
+
+    <div id="main-content">
+        <div id="page-login" class="page active-page">
+            <h2>歡迎來到比與比值挑戰賽！</h2>
+            <div class="rules-box">
+                <h3>📜 遊戲規則</h3>
+                <ul>
+                    <li><strong>計時器：</strong>依據你選擇的難度，會有不同的倒數時間。系統會不斷產生隨機數字題目！</li>
+                    <li><strong>加減秒機制：</strong>答對一題 <strong>+5秒</strong>，答錯一題 <strong>-5秒</strong>！</li>
+                    <li><strong>Combo 系統：</strong>連續答對可累積 Combo，分數翻倍成長！</li>
+                    <li><strong>計算空間：</strong>遇到困難的數字，可以點擊「開啟計算空間」在題目下方進行直式或約分計算。</li>
+                </ul>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                <input type="text" id="player-name" placeholder="請輸入你的名字..." required style="flex: 1; min-width: 200px;">
+                <button class="action-btn" onclick="startGameLogin()">進入遊戲大廳</button>
+            </div>
+        </div>
+
+        <div id="page-menu" class="page">
+            <h2 id="welcome-msg" style="color: var(--primary-color);"></h2>
+            
+            <h3>⚙️ 選擇難度</h3>
+            <div class="difficulty-select">
+                <label class="diff-label"><input type="radio" name="diff" value="90" checked> 基礎 (90秒)</label>
+                <label class="diff-label"><input type="radio" name="diff" value="60"> 進階 (60秒)</label>
+                <label class="diff-label"><input type="radio" name="diff" value="45"> 魔王 (45秒)</label>
+            </div>
+
+            <h3>🎯 選擇關卡</h3>
+            <div class="level-select">
+                <button class="level-btn" onclick="startLevel(1)">第一關：比與相等的比</button>
+                <button class="level-btn" onclick="startLevel(2)">第二關：最簡整數比</button>
+                <button class="level-btn" onclick="startLevel(3)">第三關：認識比值</button>
+            </div>
+
+            <h3>🏆 排行榜 (Top 10)</h3>
+            <table class="leaderboard">
+                <thead>
+                    <tr>
+                        <th>名次</th>
+                        <th>玩家</th>
+                        <th>挑戰關卡</th>
+                        <th>分數</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="page-game" class="page">
+            <div class="game-header">
+                <div class="stats">
+                    <span id="timer-display">⏳ 00:00</span>
+                    <span id="score-display">💯 分數: 0</span>
+                </div>
+                <div id="combo-display" class="combo-text" style="display: none;">Combo x1!</div>
+            </div>
+
+            <div class="question-box" id="question-text">題目載入中...</div>
+            
+            <div id="dedicated-whiteboard">
+                <button class="clear-wb-btn" onclick="clearWhiteboard()">🗑️ 清空畫面</button>
+                <canvas id="whiteboard"></canvas>
+            </div>
+
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <div class="game-controls">
+                <button class="action-btn" style="background-color: #95A5A6;" onclick="togglePause()" id="pause-btn">⏸️ 暫停</button>
+                <button class="action-btn" style="background-color: #34495E;" onclick="toggleWhiteboard()" id="wb-btn">🖍️ 開啟計算空間</button>
+                <button class="action-btn" style="background-color: #F39C12;" onclick="quitGame()">🔙 回主選單</button>
+            </div>
+        </div>
+
+        <div id="page-result" class="page">
+            <h2 style="text-align: center; color: var(--primary-color); font-size: 32px;">遊戲結束！</h2>
+            <h3 style="text-align: center;">總分：<span id="final-score" style="color: var(--secondary-color); font-size: 40px;">0</span></h3>
+            
+            <h3>📝 測驗復盤 (紀錄你的所有作答)</h3>
+            <div id="review-container">
+                </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="action-btn" onclick="returnToMenu()">🔙 回到主選單</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-pill">
+            <div class="footer-left">
+                <div class="footer-dot" aria-hidden="true"></div>
+                <div class="footer-copy">© 2025–2026 Jessie Math 捷析老師. All rights reserved.</div>
+            </div>
+            <div class="footer-right">
+                <div class="footer-icon" aria-hidden="true"><i class="fas fa-compass"></i></div>
+                <div class="footer-tagline">數學不迷路，Jessie帶你走向理解。</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 數學輔助工具 ---
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- 格式化分數 (分子上 分母下) ---
+        function formatFraction(num, den) {
+            if (den === 1) return `${num}`;
+            return `<span class="fraction"><span class="fup">${num}</span><span class="fdn">${den}</span></span>`;
+        }
+
+        // --- 題目動態產生器 ---
+        function generateQuestionOptions(qText, correctAns, wrong1, wrong2, wrong3) {
+            let optionsSet = new Set([correctAns, wrong1, wrong2, wrong3]);
+            // 若因為隨機演算法導致有重複選項，補上隨機防呆比例 (用於非分數的 fallback)
+            while(optionsSet.size < 4) {
+                optionsSet.add(randomInt(1, 100) + "：" + randomInt(1, 100));
+            }
+            let optionsArr = Array.from(optionsSet);
+            shuffleArray(optionsArr);
+            return { q: qText, options: optionsArr, ans: optionsArr.indexOf(correctAns) };
+        }
+
+        function generateLevel1() {
+            // 第一關：比與相等的比
+            const type = randomInt(0, 2);
+            if (type === 0) {
+                const items = ["蘋果", "橘子", "奇異果", "鉛筆", "筆記本", "草莓", "代幣", "貼紙"];
+                let i1 = randomInt(0, 3), i2 = randomInt(4, 7);
+                let a = randomInt(15, 120), b = randomInt(15, 120);
+                while(a === b) b = randomInt(15, 120);
+                let qText = `桌上有 ${a} 個${items[i1]}和 ${b} 個${items[i2]}。${items[i1]}數量對${items[i2]}數量的比怎麼記？`;
+                let ans = `${a}：${b}`;
+                return generateQuestionOptions(qText, ans, `${b}：${a}`, `${a+randomInt(2,10)}：${b}`, `${a}：${b+randomInt(2,10)}`);
+            } else if (type === 1) {
+                let a = randomInt(2, 15), b = randomInt(2, 15);
+                while(a === b) b = randomInt(2, 15);
+                let k1 = randomInt(2, 8), k2 = randomInt(5, 15);
+                let qText = `哪一個和 ${a * k1}：${b * k1} 是相等的比？`;
+                let ans = `${a * k2}：${b * k2}`;
+                return generateQuestionOptions(qText, ans, `${b * k2}：${a * k2}`, `${a * k2 + 1}：${b * k2}`, `${a * k1 + 1}：${b * k1}`);
+            } else {
+                let a = randomInt(12, 35); // 男生
+                let b = randomInt(12, 35); // 女生
+                while(a === b) b = randomInt(12, 35);
+                let total = a + b;
+                let qText = `班上有男生 ${a} 人，女生 ${b} 人。男生人數對「全班總人數」的比怎麼記？`;
+                let ans = `${a}：${total}`;
+                return generateQuestionOptions(qText, ans, `${a}：${b}`, `${b}：${total}`, `${total}：${a}`);
+            }
+        }
+
+        function generateLevel2() {
+            // 第二關：最簡整數比
+            let type = randomInt(0, 2);
+            if (type === 0) { 
+                let a, b;
+                do { a = randomInt(2, 25); b = randomInt(2, 25); } while (gcd(a, b) !== 1 || a === b);
+                let k = randomInt(5, 30);
+                let qText = `將 ${a*k}：${b*k} 化為最簡整數比。`;
+                let ans = `${a}：${b}`;
+                return generateQuestionOptions(qText, ans, `${b}：${a}`, `${a*2}：${b*2}`, `${a+1}：${b}`);
+            } else if (type === 1) { 
+                let a, b;
+                do { a = randomInt(2, 15); b = randomInt(2, 15); } while (gcd(a, b) !== 1 || a === b);
+                let k = randomInt(2, 9);
+                let aDec = (a * k * 0.1).toFixed(1);
+                let bDec = (b * k * 0.1).toFixed(1);
+                let qText = `將 ${aDec}：${bDec} 化為最簡整數比。`;
+                let ans = `${a}：${b}`;
+                return generateQuestionOptions(qText, ans, `${b}：${a}`, `${a*10}：${b*10}`, `${a+2}：${b+1}`);
+            } else { 
+                let a, b, c, d; 
+                do {
+                    a = randomInt(1, 5); b = randomInt(2, 7);
+                    c = randomInt(1, 5); d = randomInt(2, 7);
+                } while (a/b === c/d || gcd(a,b)!==1 || gcd(c,d)!==1);
+                let num1 = a * d;
+                let num2 = b * c;
+                let g = gcd(num1, num2);
+                let simpA = num1 / g;
+                let simpB = num2 / g;
+                let qText = `將 ${formatFraction(a,b)}：${formatFraction(c,d)} 化為最簡整數比。`;
+                let ans = `${simpA}：${simpB}`;
+                return generateQuestionOptions(qText, ans, `${simpB}：${simpA}`, `${num1}：${num2+1}`, `${num1+1}：${num2}`);
+            }
+        }
+
+        function generateLevel3() {
+            // 第三關：認識比值
+            let type = randomInt(0, 1);
+            if (type === 0) {
+                let a = randomInt(2, 60);
+                let b = randomInt(2, 60);
+                while(a === b) b = randomInt(2, 60);
+                let g = gcd(a, b);
+                let simpA = a / g;
+                let simpB = b / g;
+                
+                let qText = `${a}：${b} 的比值是多少？`;
+                let ans = formatFraction(simpA, simpB);
+                let w1 = formatFraction(simpB, simpA);
+                let w2 = formatFraction(simpA + 1, simpB);
+                let w3 = formatFraction(simpA, simpB + 1);
+                
+                return generateQuestionOptions(qText, ans, w1, w2, w3);
+            } else {
+                const items = ["水蜜桃", "蘋果", "梨子", "文旦"];
+                let i = randomInt(0, 3);
+                let price = randomInt(30, 300);
+                let qty = randomInt(2, 12);
+                let qText = `${qty}顆${items[i]}賣${price}元。價錢對數量的比值是多少？`;
+                
+                let g = gcd(price, qty);
+                let num = price/g;
+                let den = qty/g;
+                
+                let ansStr = formatFraction(num, den);
+                let w1 = formatFraction(den, num);
+                let w2 = `${price}`;
+                let w3 = formatFraction(num + 1, den);
+                
+                return generateQuestionOptions(qText, ansStr, w1, w2, w3);
+            }
+        }
+
+        // --- 遊戲狀態變數 ---
+        let playerName = "";
+        let currentLevel = 1;
+        let baseTime = 90;
+        let timeLeft = 90;
+        let score = 0;
+        let combo = 0;
+        let currentQuestionObj = null;
+        let timerId = null;
+        let isPaused = false;
+        let reviewData = [];
+
+        // --- 計算白板邏輯 ---
+        const wbContainer = document.getElementById('dedicated-whiteboard');
+        const canvas = document.getElementById('whiteboard');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        function resizeCanvas() {
+            if (wbContainer.style.display === 'block') {
+                canvas.width = wbContainer.offsetWidth;
+                canvas.height = wbContainer.offsetHeight;
+                ctx.lineCap = 'round';
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#2980B9';
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startPosition(e) {
+            drawing = true;
+            const pos = getMousePos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            draw(e);
+        }
+
+        function endPosition() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            const pos = getMousePos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        // 滑鼠事件
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseout', endPosition);
+        
+        // 觸控事件
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startPosition(e); }, {passive: false});
+        canvas.addEventListener('touchend', (e) => { e.preventDefault(); endPosition(); }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, {passive: false});
+
+        function clearWhiteboard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function toggleWhiteboard() {
+            const wbBtn = document.getElementById('wb-btn');
+            if(wbContainer.style.display === 'none' || wbContainer.style.display === '') {
+                wbContainer.style.display = 'block';
+                wbBtn.innerText = "🖍️ 關閉計算空間";
+                wbBtn.style.backgroundColor = "#27AE60";
+                resizeCanvas(); // 展開時立刻計算畫布大小
+            } else {
+                wbContainer.style.display = 'none';
+                wbBtn.innerText = "🖍️ 開啟計算空間";
+                wbBtn.style.backgroundColor = "#34495E";
+            }
+        }
+
+        // --- 頁面與遊戲流程 ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+        }
+
+        function startGameLogin() {
+            const nameInput = document.getElementById('player-name').value.trim();
+            if(!nameInput) { alert("請輸入你的名字喔！"); return; }
+            playerName = nameInput;
+            document.getElementById('welcome-msg').innerText = `你好，${playerName}！準備好挑戰了嗎？`;
+            updateLeaderboardDisplay();
+            showPage('page-menu');
+        }
+
+        function startLevel(level) {
+            currentLevel = level;
+            baseTime = parseInt(document.querySelector('input[name="diff"]:checked').value);
+            timeLeft = baseTime;
+            score = 0;
+            combo = 0;
+            reviewData = [];
+            isPaused = false;
+            
+            document.getElementById('pause-btn').innerText = "⏸️ 暫停";
+            document.getElementById('options-container').style.opacity = '1';
+            
+            // 確保白板關閉並清空
+            wbContainer.style.display = 'none';
+            document.getElementById('wb-btn').innerText = "🖍️ 開啟計算空間";
+            document.getElementById('wb-btn').style.backgroundColor = "#34495E";
+
+            showPage('page-game');
+            updateStatsUI();
+            loadQuestion();
+            
+            clearInterval(timerId);
+            timerId = setInterval(gameTick, 1000);
+        }
+
+        function gameTick() {
+            if (isPaused) return;
+            timeLeft--;
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                endGame();
+            }
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            document.getElementById('timer-display').innerText = `⏳ ${timeLeft}秒`;
+            document.getElementById('score-display').innerText = `💯 分數: ${score}`;
+            const comboEl = document.getElementById('combo-display');
+            if (combo > 1) {
+                comboEl.innerText = `Combo x${combo}!`;
+                comboEl.style.display = 'block';
+            } else {
+                comboEl.style.display = 'none';
+            }
+        }
+
+        function loadQuestion() {
+            if (currentLevel === 1) currentQuestionObj = generateLevel1();
+            else if (currentLevel === 2) currentQuestionObj = generateLevel2();
+            else currentQuestionObj = generateLevel3();
+
+            // 改為使用 innerHTML 支援 HTML 數學格式標籤
+            document.getElementById('question-text').innerHTML = `Q: ${currentQuestionObj.q}`;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            currentQuestionObj.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                // 改為使用 innerHTML 以支援數學分數格式
+                btn.innerHTML = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btn) {
+            if (isPaused) return;
+            
+            const isCorrect = (selectedIndex === currentQuestionObj.ans);
+            
+            // 記錄至復盤資料 (包含 HTML)
+            reviewData.push({
+                q: currentQuestionObj.q,
+                userAns: currentQuestionObj.options[selectedIndex],
+                correctAns: currentQuestionObj.options[currentQuestionObj.ans],
+                isCorrect: isCorrect
+            });
+
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => b.disabled = true);
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                combo++;
+                score += 10 * combo;
+                timeLeft += 5; 
+            } else {
+                btn.classList.add('wrong');
+                allBtns[currentQuestionObj.ans].classList.add('correct');
+                combo = 0;
+                timeLeft -= 5;
+                if(timeLeft < 0) timeLeft = 0;
+            }
+
+            updateStatsUI();
+            
+            setTimeout(() => {
+                if (timeLeft > 0) {
+                    clearWhiteboard(); // 換題自動清空白板
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.getElementById('pause-btn').innerText = isPaused ? "▶️ 繼續" : "⏸️ 暫停";
+            document.getElementById('options-container').style.opacity = isPaused ? '0.5' : '1';
+        }
+
+        function quitGame() {
+            clearInterval(timerId);
+            showPage('page-menu');
+        }
+
+        function endGame() {
+            clearInterval(timerId);
+            saveScore();
+            document.getElementById('final-score').innerText = score;
+            generateReview();
+            showPage('page-result');
+        }
+
+        function generateReview() {
+            const container = document.getElementById('review-container');
+            container.innerHTML = '';
+            
+            if(reviewData.length === 0) {
+                container.innerHTML = '<p style="text-align:center;">本次測驗無作答紀錄。</p>';
+                return;
+            }
+
+            reviewData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = `review-item ${item.isCorrect ? 'correct-bg' : 'wrong-bg'}`;
+                // 題目和選項因為包含數學分數的 HTML，所以使用 innerHTML
+                div.innerHTML = `
+                    <p><strong>第 ${index + 1} 題：</strong>${item.q}</p>
+                    <p>你的選擇：${item.userAns} ${item.isCorrect ? '✅' : '❌'}</p>
+                    ${!item.isCorrect ? `<p style="color:var(--wrong-color); font-weight:bold;">正確解答：${item.correctAns}</p>` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- 排行榜儲存 ---
+        function saveScore() {
+            let lb = JSON.parse(localStorage.getItem('jessieMathLB')) || [];
+            let levelName = currentLevel === 1 ? "相等的比" : (currentLevel === 2 ? "最簡整數比" : "認識比值");
+            lb.push({
+                player: playerName,
+                level: `關卡${currentLevel} (${levelName})`,
+                score: score,
+                date: new Date().getTime()
+            });
+            lb.sort((a, b) => b.score - a.score);
+            lb = lb.slice(0, 10);
+            localStorage.setItem('jessieMathLB', JSON.stringify(lb));
+        }
+
+        function updateLeaderboardDisplay() {
+            let lb = JSON.parse(localStorage.getItem('jessieMathLB')) || [];
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+            
+            if(lb.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">目前沒有紀錄，趕快來挑戰吧！</td></tr>';
+                return;
+            }
+
+            lb.forEach((entry, index) => {
+                let rankIcon = `${index + 1}`;
+                if(index === 0) rankIcon = '🥇 1';
+                else if(index === 1) rankIcon = '🥈 2';
+                else if(index === 2) rankIcon = '🥉 3';
+                else rankIcon = `🏅 ${index + 1}`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${rankIcon}</td>
+                        <td>${entry.player}</td>
+                        <td>${entry.level}</td>
+                        <td style="font-weight:bold; color:var(--secondary-color);">${entry.score}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function returnToMenu() {
+            updateLeaderboardDisplay();
+            showPage('page-menu');
+        }
+    </script>
+</body>
+</html>
